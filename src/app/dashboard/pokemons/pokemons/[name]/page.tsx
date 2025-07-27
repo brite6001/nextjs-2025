@@ -4,7 +4,7 @@ import { Pokemon } from "@/pokemons/interfaces/pokemon";
 import { Metadata } from "next";
 
 interface Props {
-  params: { id: string };
+  params: { name: string };
 }
 
 //! En build time
@@ -29,7 +29,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
-    const { id, name } = await getPokemon(params.id);
+    const { id, name } = await getPokemon(params.name);
 
     if (!id || !name) {
       return {
@@ -50,9 +50,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-async function getPokemon(id: string): Promise<Pokemon> {
+async function getPokemon(name: string): Promise<Pokemon> {
   try {
-    const pokemon = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`, {
+    const pokemon = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`, {
       // cache: "force-cache", // TODO: cambiar esto en un futuro
       next: {
         revalidate: 60 * 60 * 30 * 6
@@ -68,13 +68,13 @@ async function getPokemon(id: string): Promise<Pokemon> {
 }
 
 export default async function PokemonPage({ params }: Props) {
-  const id = params?.id;
+  const name = params?.name;
 
-  if (!id) {
+  if (!name) {
     throw new Error("ID no proporcionado");
   }
 
-  const pokemon = await getPokemon(id);
+  const pokemon = await getPokemon(name);
   return (
     <div className="flex mt-5 flex-col items-center text-slate-800">
       <div className="relative flex flex-col items-center rounded-[20px] w-[700px] mx-auto bg-white bg-clip-border  shadow-lg  p-3">
